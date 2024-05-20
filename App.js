@@ -23,14 +23,33 @@ export default function App() {
 
     useEffect(() => {
         loadToDos();
+        loadWorking();
     }, []);
 
-    const travel = () => setWorking(false);
-    const work = () => setWorking(true);
+    const travel = () => {
+        setWorking(false);
+        savePage(false);
+    };
+
+    const work = () => {
+        setWorking(true);
+        savePage(true);
+    };
+
     const onChangeText = (payload) => setText(payload);
+
     const saveToDos = async (toSave) => {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
     };
+
+    const savePage = async (page) => {
+        try {
+            await AsyncStorage.setItem("@working", JSON.stringify(page));
+        } catch (e) {
+            alert(e);
+        }
+    };
+
     const loadToDos = async () => {
         try {
             const s = await AsyncStorage.getItem(STORAGE_KEY);
@@ -39,6 +58,18 @@ export default function App() {
             alert(e);
         }
     };
+
+    const loadWorking = async () => {
+        try {
+            const w = await AsyncStorage.getItem("@working");
+            if (w !== null) {
+                setWorking(JSON.parse(w));
+            }
+        } catch (e) {
+            alert(e);
+        }
+    };
+
     const addToDo = async () => {
         if (text === "") {
             return;
@@ -49,6 +80,7 @@ export default function App() {
         await saveToDos(newToDos);
         setText("");
     };
+
     const deleteToDo = (key) => {
         Alert.alert("Delete", "Sure?", [
             { text: "Cancel" },
