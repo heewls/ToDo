@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Fontisto } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { theme } from "./colors";
 import { useEffect, useState } from "react";
 
@@ -75,7 +76,7 @@ export default function App() {
             return;
         }
         // const newToDos = Object.assign({}, toDos, { [Date.now()]: { text, work: working } });
-        const newToDos = { ...toDos, [Date.now()]: { text, working } };
+        const newToDos = { ...toDos, [Date.now()]: { text, working, done: false } };
         setToDos(newToDos);
         await saveToDos(newToDos);
         setText("");
@@ -96,6 +97,13 @@ export default function App() {
             },
         ]);
         return;
+    };
+
+    const doneToDo = (key) => {
+        const newToDos = { ...toDos };
+        newToDos[key] = { ...newToDos[key], done: !newToDos[key].done };
+        setToDos(newToDos);
+        saveToDos(newToDos);
     };
 
     return (
@@ -126,9 +134,27 @@ export default function App() {
                     {Object.keys(toDos).map((key) =>
                         toDos[key].working === working ? (
                             <View style={styles.toDo} key={key}>
-                                <Text style={styles.toDoText}>{toDos[key].text}</Text>
+                                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                    <TouchableOpacity onPress={() => doneToDo(key)}>
+                                        <MaterialCommunityIcons
+                                            name={toDos[key].done ? "checkbox-marked" : "checkbox-blank-outline"}
+                                            size={28}
+                                            color={theme.white}
+                                            style={{ marginRight: 10 }}
+                                        />
+                                    </TouchableOpacity>
+                                    <Text
+                                        style={{
+                                            ...styles.toDoText,
+                                            textDecorationLine: toDos[key].done ? "line-through" : "none",
+                                            opacity: toDos[key].done ? 0.2 : 1,
+                                        }}
+                                    >
+                                        {toDos[key].text}
+                                    </Text>
+                                </View>
                                 <TouchableOpacity onPress={() => deleteToDo(key)}>
-                                    <Fontisto name="trash" style={{ opacity: 0.2 }} size={24} color={theme.white} />
+                                    <Fontisto name="trash" style={{ opacity: 0.2 }} size={22} color={theme.white} />
                                 </TouchableOpacity>
                             </View>
                         ) : null
@@ -175,7 +201,7 @@ const styles = StyleSheet.create({
     },
     toDoText: {
         color: theme.white,
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: "500",
     },
 });
