@@ -125,14 +125,30 @@ export default function App() {
     };
 
     return (
-        <View style={styles.container}>
-            <StatusBar style="light" />
+        <View style={{ ...styles.container, backgroundColor: working ? theme.black : theme.white }}>
+            <StatusBar style={working ? "light" : "dark"} />
             <View style={styles.header}>
                 <TouchableOpacity onPress={work}>
-                    <Text style={{ ...styles.btnText, color: working ? theme.white : theme.grey }}>Work</Text>
+                    <Text
+                        style={{
+                            ...styles.btnText,
+                            color: working ? theme.white : theme.green,
+                            opacity: working ? 1 : 0.2,
+                        }}
+                    >
+                        Work
+                    </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={travel}>
-                    <Text style={{ ...styles.btnText, color: working ? theme.grey : theme.white }}>Travel</Text>
+                    <Text
+                        style={{
+                            ...styles.btnText,
+                            color: working ? theme.white : theme.green,
+                            opacity: working ? 0.2 : 1,
+                        }}
+                    >
+                        Travel
+                    </Text>
                 </TouchableOpacity>
             </View>
             <TextInput
@@ -140,7 +156,7 @@ export default function App() {
                 onChangeText={onChangeText}
                 returnKeyType="done"
                 value={text}
-                style={styles.input}
+                style={{ ...styles.input, backgroundColor: working ? theme.white : theme.greenOpacity }}
                 placeholder={working ? "Add A To Do For Working" : "Add A To Do For Traveling"}
             />
             {Object.keys(toDos).length === 0 ? (
@@ -153,7 +169,10 @@ export default function App() {
                         .reverse()
                         .map((key) =>
                             toDos[key].working === working ? (
-                                <View style={styles.toDo} key={key}>
+                                <View
+                                    style={{ ...styles.toDo, backgroundColor: working ? theme.grey : theme.green }}
+                                    key={key}
+                                >
                                     <View style={{ flexDirection: "row", alignItems: "center" }}>
                                         <TouchableOpacity onPress={() => doneToDo(key)}>
                                             <MaterialCommunityIcons
