@@ -21,6 +21,8 @@ export default function App() {
     const [working, setWorking] = useState(true);
     const [text, setText] = useState("");
     const [toDos, setToDos] = useState({});
+    const [edit, setEdit] = useState("");
+    const [editKey, setEditKey] = useState(null);
 
     useEffect(() => {
         loadToDos();
@@ -106,6 +108,22 @@ export default function App() {
         saveToDos(newToDos);
     };
 
+    const editToDo = () => {
+        if (editKey !== null) {
+            const newToDos = { ...toDos };
+            newToDos[editKey] = { ...newToDos[editKey], text: edit };
+            setToDos(newToDos);
+            saveToDos(newToDos);
+            setEditKey(null);
+            setEdit("");
+        }
+    };
+
+    const onEditText = (key) => {
+        setEditKey(key);
+        setEdit(toDos[key].text);
+    };
+
     return (
         <View style={styles.container}>
             <StatusBar style="light" />
@@ -131,34 +149,63 @@ export default function App() {
                 </View>
             ) : (
                 <ScrollView>
-                    {Object.keys(toDos).map((key) =>
-                        toDos[key].working === working ? (
-                            <View style={styles.toDo} key={key}>
-                                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                    <TouchableOpacity onPress={() => doneToDo(key)}>
-                                        <MaterialCommunityIcons
-                                            name={toDos[key].done ? "checkbox-marked" : "checkbox-blank-outline"}
-                                            size={28}
-                                            color={theme.white}
-                                            style={{ marginRight: 10 }}
-                                        />
-                                    </TouchableOpacity>
-                                    <Text
-                                        style={{
-                                            ...styles.toDoText,
-                                            textDecorationLine: toDos[key].done ? "line-through" : "none",
-                                            opacity: toDos[key].done ? 0.2 : 1,
-                                        }}
-                                    >
-                                        {toDos[key].text}
-                                    </Text>
+                    {Object.keys(toDos)
+                        .reverse()
+                        .map((key) =>
+                            toDos[key].working === working ? (
+                                <View style={styles.toDo} key={key}>
+                                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                        <TouchableOpacity onPress={() => doneToDo(key)}>
+                                            <MaterialCommunityIcons
+                                                name={toDos[key].done ? "checkbox-marked" : "checkbox-blank-outline"}
+                                                size={28}
+                                                color={theme.white}
+                                                style={{ marginRight: 10 }}
+                                            />
+                                        </TouchableOpacity>
+                                        {editKey === key ? (
+                                            <TextInput
+                                                autoFocus={true}
+                                                onSubmitEditing={editToDo}
+                                                onChangeText={setEdit}
+                                                returnKeyType="done"
+                                                value={edit}
+                                                style={{ color: theme.white, fontSize: 16 }}
+                                                onBlur={() => setEditKey(null)}
+                                            />
+                                        ) : (
+                                            <Text
+                                                style={{
+                                                    ...styles.toDoText,
+                                                    textDecorationLine: toDos[key].done ? "line-through" : "none",
+                                                    opacity: toDos[key].done ? 0.2 : 1,
+                                                }}
+                                            >
+                                                {toDos[key].text}
+                                            </Text>
+                                        )}
+                                    </View>
+                                    <View style={{ flexDirection: "row" }}>
+                                        <TouchableOpacity onPress={() => onEditText(key)}>
+                                            <MaterialCommunityIcons
+                                                name="pencil"
+                                                style={{ opacity: 0.5, marginRight: 10 }}
+                                                size={24}
+                                                color={theme.white}
+                                            />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => deleteToDo(key)}>
+                                            <Fontisto
+                                                name="trash"
+                                                style={{ opacity: 0.5 }}
+                                                size={22}
+                                                color={theme.white}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
-                                <TouchableOpacity onPress={() => deleteToDo(key)}>
-                                    <Fontisto name="trash" style={{ opacity: 0.2 }} size={22} color={theme.white} />
-                                </TouchableOpacity>
-                            </View>
-                        ) : null
-                    )}
+                            ) : null
+                        )}
                 </ScrollView>
             )}
         </View>
@@ -187,7 +234,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 30,
         marginVertical: 20,
-        fontSize: 18,
+        fontSize: 20,
     },
     toDo: {
         backgroundColor: theme.grey,
