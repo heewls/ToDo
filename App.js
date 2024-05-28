@@ -14,6 +14,7 @@ import { Fontisto } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { theme } from "./colors";
 import { useEffect, useState } from "react";
+import ToDoItems from "./ToDoItems";
 
 const STORAGE_KEY = "@toDos";
 
@@ -165,66 +166,18 @@ export default function App() {
                 </View>
             ) : (
                 <ScrollView>
-                    {Object.keys(toDos)
-                        .reverse()
-                        .map((key) =>
-                            toDos[key].working === working ? (
-                                <View
-                                    style={{ ...styles.toDo, backgroundColor: working ? theme.grey : theme.green }}
-                                    key={key}
-                                >
-                                    <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                        <TouchableOpacity onPress={() => doneToDo(key)}>
-                                            <MaterialCommunityIcons
-                                                name={toDos[key].done ? "checkbox-marked" : "checkbox-blank-outline"}
-                                                size={28}
-                                                color={theme.white}
-                                                style={{ marginRight: 10 }}
-                                            />
-                                        </TouchableOpacity>
-                                        {editKey === key ? (
-                                            <TextInput
-                                                autoFocus={true}
-                                                onSubmitEditing={editToDo}
-                                                onChangeText={setEdit}
-                                                returnKeyType="done"
-                                                value={edit}
-                                                style={{ color: theme.white, fontSize: 16 }}
-                                                onBlur={() => setEditKey(null)}
-                                            />
-                                        ) : (
-                                            <Text
-                                                style={{
-                                                    ...styles.toDoText,
-                                                    textDecorationLine: toDos[key].done ? "line-through" : "none",
-                                                    opacity: toDos[key].done ? 0.2 : 1,
-                                                }}
-                                            >
-                                                {toDos[key].text}
-                                            </Text>
-                                        )}
-                                    </View>
-                                    <View style={{ flexDirection: "row" }}>
-                                        <TouchableOpacity onPress={() => onEditText(key)}>
-                                            <MaterialCommunityIcons
-                                                name="pencil"
-                                                style={{ opacity: 0.5, marginRight: 10 }}
-                                                size={24}
-                                                color={theme.white}
-                                            />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => deleteToDo(key)}>
-                                            <Fontisto
-                                                name="trash"
-                                                style={{ opacity: 0.5 }}
-                                                size={22}
-                                                color={theme.white}
-                                            />
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            ) : null
-                        )}
+                    <ToDoItems
+                        deleteToDo={deleteToDo}
+                        onEditText={onEditText}
+                        doneToDo={doneToDo}
+                        working={working}
+                        toDos={toDos}
+                        editKey={editKey}
+                        editToDo={editToDo}
+                        onBlur={() => setEditKey(null)}
+                        setEdit={setEdit}
+                        edit={edit}
+                    />
                 </ScrollView>
             )}
         </View>
@@ -234,7 +187,6 @@ export default function App() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.black,
         paddingHorizontal: 20,
     },
     header: {
@@ -243,31 +195,14 @@ const styles = StyleSheet.create({
         marginTop: 100,
     },
     btnText: {
-        color: theme.white,
         fontSize: 38,
         fontWeight: "600",
     },
     input: {
-        backgroundColor: theme.white,
         paddingVertical: 15,
         paddingHorizontal: 20,
         borderRadius: 30,
         marginVertical: 20,
         fontSize: 20,
-    },
-    toDo: {
-        backgroundColor: theme.grey,
-        marginBottom: 10,
-        paddingVertical: 20,
-        paddingHorizontal: 20,
-        borderRadius: 15,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
-    toDoText: {
-        color: theme.white,
-        fontSize: 18,
-        fontWeight: "500",
     },
 });
