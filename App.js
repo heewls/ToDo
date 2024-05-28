@@ -78,7 +78,11 @@ export default function App() {
     const loadToDos = async () => {
         try {
             const s = await AsyncStorage.getItem(STORAGE_KEY);
-            setToDos(JSON.parse(s));
+            if (s !== null) {
+                setToDos(JSON.parse(s));
+            } else {
+                setToDos({});
+            }
         } catch (e) {
             alert(e);
         }
@@ -213,7 +217,11 @@ export default function App() {
             />
             {Object.keys(toDos).length === 0 ? (
                 <View style={{ alignItems: "center" }}>
-                    <ActivityIndicator color={theme.white} style={{ marginTop: 10 }} size="large" />
+                    <ActivityIndicator
+                        color={working ? theme.white : theme.green}
+                        style={{ marginTop: 10 }}
+                        size="large"
+                    />
                 </View>
             ) : (
                 <ScrollView>
