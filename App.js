@@ -24,10 +24,13 @@ export default function App() {
     const [toDos, setToDos] = useState({});
     const [edit, setEdit] = useState("");
     const [editKey, setEditKey] = useState(null);
+    const [workingTitle, setWorkingTitle] = useState("");
+    const [travelTitle, setTravelTitle] = useState("");
 
     useEffect(() => {
         loadToDos();
         loadWorking();
+        loadTitles();
     }, []);
 
     const travel = () => {
@@ -42,13 +45,31 @@ export default function App() {
 
     const onChangeText = (payload) => setText(payload);
 
+    const onChangeTitle = (payload) => {
+        if (working) setWorkingTitle(payload);
+        else setTravelTitle(payload);
+    };
+
     const saveToDos = async (toSave) => {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+        try {
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+        } catch (e) {
+            alert(e);
+        }
     };
 
     const savePage = async (page) => {
         try {
             await AsyncStorage.setItem("@working", JSON.stringify(page));
+        } catch (e) {
+            alert(e);
+        }
+    };
+
+    const saveTitles = async () => {
+        try {
+            await AsyncStorage.setItem("@workingTitle", workingTitle);
+            await AsyncStorage.setItem("@travelTitle", travelTitle);
         } catch (e) {
             alert(e);
         }
@@ -68,6 +89,21 @@ export default function App() {
             const w = await AsyncStorage.getItem("@working");
             if (w !== null) {
                 setWorking(JSON.parse(w));
+            }
+        } catch (e) {
+            alert(e);
+        }
+    };
+
+    const loadTitles = async () => {
+        try {
+            const wt = await AsyncStorage.getItem("@workingTitle");
+            const tt = await AsyncStorage.getItem("@travelTitle");
+            if (wt !== null) {
+                setWorkingTitle(wt);
+            }
+            if (tt !== null) {
+                setTravelTitle(tt);
             }
         } catch (e) {
             alert(e);
@@ -125,6 +161,10 @@ export default function App() {
         setEdit(toDos[key].text);
     };
 
+    const addTitle = async () => {
+        await saveTitles();
+    };
+
     return (
         <View style={{ ...styles.container, backgroundColor: working ? theme.black : theme.white }}>
             <StatusBar style={working ? "light" : "dark"} />
@@ -153,12 +193,23 @@ export default function App() {
                 </TouchableOpacity>
             </View>
             <TextInput
+                onSubmitEditing={addTitle}
+                onChangeText={onChangeTitle}
+                returnKeyType="done"
+                value={working ? workingTitle : travelTitle}
+                style={{
+                    ...styles.title,
+                    color: working ? theme.white : theme.green,
+                }}
+                placeholder={working ? "Title for Work" : "Title for Travel"}
+            />
+            <TextInput
                 onSubmitEditing={addToDo}
                 onChangeText={onChangeText}
                 returnKeyType="done"
                 value={text}
                 style={{ ...styles.input, backgroundColor: working ? theme.white : theme.greenOpacity }}
-                placeholder={working ? "Add A To Do For Working" : "Add A To Do For Traveling"}
+                placeholder="Add A To Do"
             />
             {Object.keys(toDos).length === 0 ? (
                 <View style={{ alignItems: "center" }}>
@@ -196,6 +247,12 @@ const styles = StyleSheet.create({
     },
     btnText: {
         fontSize: 38,
+        fontWeight: "600",
+    },
+    title: {
+        paddingHorizontal: 5,
+        paddingTop: 15,
+        fontSize: 24,
         fontWeight: "600",
     },
     input: {
