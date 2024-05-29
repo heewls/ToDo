@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ToDo",
-    "slug": "ToDo",
+    "slug": "react-native-todo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,6 +22,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "25520729-f717-4af9-962c-33a2decc4cd8"
+      }
+    },
+    "owner": "gmlwls"
   }
 }

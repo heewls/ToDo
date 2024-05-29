@@ -169,6 +169,8 @@ export default function App() {
         await saveTitles();
     };
 
+    const workFilter = Object.keys(toDos).filter((key) => toDos[key].working === true).length;
+    const travelFilter = Object.keys(toDos).filter((key) => toDos[key].working === false).length;
     return (
         <View style={{ ...styles.container, backgroundColor: working ? theme.black : theme.white }}>
             <StatusBar style={working ? "light" : "dark"} />
@@ -215,13 +217,30 @@ export default function App() {
                 style={{ ...styles.input, backgroundColor: working ? theme.white : theme.greenOpacity }}
                 placeholder="Add A To Do"
             />
-            {Object.keys(toDos).length === 0 ? (
-                <View style={{ alignItems: "center" }}>
-                    <ActivityIndicator
-                        color={working ? theme.white : theme.green}
-                        style={{ marginTop: 10 }}
-                        size="large"
-                    />
+            {working ? (
+                workFilter === 0 ? (
+                    <View style={{ alignItems: "center", marginTop: 20 }}>
+                        <Text style={{ ...styles.noneToDo, color: theme.white }}>Writing A To Do For Working</Text>
+                    </View>
+                ) : (
+                    <ScrollView>
+                        <ToDoItems
+                            deleteToDo={deleteToDo}
+                            onEditText={onEditText}
+                            doneToDo={doneToDo}
+                            working={working}
+                            toDos={toDos}
+                            editKey={editKey}
+                            editToDo={editToDo}
+                            onBlur={() => setEditKey(null)}
+                            setEdit={setEdit}
+                            edit={edit}
+                        />
+                    </ScrollView>
+                )
+            ) : travelFilter === 0 ? (
+                <View style={{ alignItems: "center", marginTop: 20 }}>
+                    <Text style={{ ...styles.noneToDo, color: theme.green }}>Writing A To Do For Traveling</Text>
                 </View>
             ) : (
                 <ScrollView>
@@ -243,6 +262,10 @@ export default function App() {
     );
 }
 
+{
+    /* <ActivityIndicator color={working ? theme.white : theme.green} style={{ marginTop: 10 }} size="large" />; */
+}
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -259,15 +282,20 @@ const styles = StyleSheet.create({
     },
     title: {
         paddingHorizontal: 5,
-        paddingTop: 15,
+        paddingVertical: 3,
+        marginTop: 15,
+        marginBottom: 10,
         fontSize: 24,
-        fontWeight: "600",
+        fontWeight: "400",
     },
     input: {
         paddingVertical: 15,
         paddingHorizontal: 20,
         borderRadius: 30,
-        marginVertical: 20,
+        marginBottom: 20,
+        fontSize: 20,
+    },
+    noneToDo: {
         fontSize: 20,
     },
 });
