@@ -26,6 +26,7 @@ export default function App() {
     const [editKey, setEditKey] = useState(null);
     const [workingTitle, setWorkingTitle] = useState("");
     const [travelTitle, setTravelTitle] = useState("");
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         loadToDos();
@@ -85,6 +86,8 @@ export default function App() {
             }
         } catch (e) {
             alert(e);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -217,7 +220,9 @@ export default function App() {
                 style={{ ...styles.input, backgroundColor: working ? theme.white : theme.greenOpacity }}
                 placeholder="Add A To Do"
             />
-            {working ? (
+            {loading ? (
+                <ActivityIndicator color={working ? theme.white : theme.green} style={{ marginTop: 10 }} size="large" />
+            ) : working ? (
                 workFilter === 0 ? (
                     <View style={{ alignItems: "center", marginTop: 20 }}>
                         <Text style={{ ...styles.noneToDo, color: theme.white }}>Writing A To Do For Working</Text>
@@ -260,10 +265,6 @@ export default function App() {
             )}
         </View>
     );
-}
-
-{
-    /* <ActivityIndicator color={working ? theme.white : theme.green} style={{ marginTop: 10 }} size="large" />; */
 }
 
 const styles = StyleSheet.create({
