@@ -22,7 +22,7 @@ export default function ToDoItems({
                 .map((key) =>
                     toDos[key].working === working ? (
                         <View style={{ ...styles.toDo, backgroundColor: working ? theme.grey : theme.green }} key={key}>
-                            <View style={{ flexDirection: "row", alignItems: "center" }}>
+                            <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
                                 <TouchableOpacity onPress={() => doneToDo(key)}>
                                     <MaterialCommunityIcons
                                         name={toDos[key].done ? "checkbox-marked" : "checkbox-blank-outline"}
@@ -38,8 +38,10 @@ export default function ToDoItems({
                                         onChangeText={setEdit}
                                         returnKeyType="done"
                                         value={edit}
-                                        style={{ color: theme.white, fontSize: 16 }}
+                                        style={{ color: theme.white, fontSize: 16, maxWidth: "90%" }}
                                         onBlur={onBlur}
+                                        blurOnSubmit
+                                        multiline
                                     />
                                 ) : (
                                     <Text
@@ -53,19 +55,21 @@ export default function ToDoItems({
                                     </Text>
                                 )}
                             </View>
-                            <View style={{ flexDirection: "row" }}>
-                                <TouchableOpacity onPress={() => onEditText(key)}>
-                                    <MaterialCommunityIcons
-                                        name="pencil"
-                                        style={{ opacity: 0.5, marginRight: 10 }}
-                                        size={24}
-                                        color={theme.white}
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => deleteToDo(key)}>
-                                    <Fontisto name="trash" style={{ opacity: 0.5 }} size={22} color={theme.white} />
-                                </TouchableOpacity>
-                            </View>
+                            {editKey !== key && (
+                                <View style={{ flexDirection: "row" }}>
+                                    <TouchableOpacity onPress={() => onEditText(key)}>
+                                        <MaterialCommunityIcons
+                                            name="pencil"
+                                            style={{ opacity: 0.5, marginRight: 10 }}
+                                            size={24}
+                                            color={theme.white}
+                                        />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => deleteToDo(key)}>
+                                        <Fontisto name="trash" style={{ opacity: 0.5 }} size={22} color={theme.white} />
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                     ) : null
                 )}
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
     toDo: {
         marginBottom: 10,
         paddingVertical: 20,
-        paddingHorizontal: 20,
+        paddingHorizontal: 15,
         borderRadius: 15,
         flexDirection: "row",
         alignItems: "center",
@@ -87,5 +91,7 @@ const styles = StyleSheet.create({
         color: theme.white,
         fontSize: 18,
         fontWeight: "500",
+        maxWidth: "86%",
+        marginRight: 10,
     },
 });
